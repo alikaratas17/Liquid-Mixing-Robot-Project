@@ -1,3 +1,5 @@
+#key
+lib/my_key.dart
 # Miscellaneous
 *.class
 *.log

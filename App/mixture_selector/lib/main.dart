@@ -1,9 +1,37 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'my_key.dart' as my_key;
+import 'package:http/http.dart' as http;
 
-void main() {
-  runApp(const MyApp());
+
+void main()=> runApp(MyApp());
+class MyApp extends StatelessWidget{
+  @override
+  Widget build(BuildContext context){
+    return MaterialApp(title: 'Select a Mixture',
+    home:Scaffold(appBar: AppBar(title: Text('Why is this title different from prev?')),body: Column(children: [
+      Text('Please Select one of below'),
+      ElevatedButton(onPressed: func1, child: Text('Option 1')),
+      ElevatedButton(onPressed: null, child: Text('Option 2')),
+      ElevatedButton(onPressed: null, child: Text('Option 3')),
+      ElevatedButton(onPressed: null, child: Text('Option 4')),
+    ]),));
+  }
+
 }
-
+void func1() async{
+  String my_url = 'https://io.adafruit.com/api/v2/akaratas17/feeds/message/data?X-AIO-Key='+ my_key.key;
+  String my_json=jsonEncode( {'json':{'datum':{'value':'myMixture'}}});
+  print(my_url);
+  print(my_json);
+  final response = await http.post(Uri.parse(my_url),body:my_json,);
+  if (response.statusCode==200){
+    print("YES");
+  }
+  print(response.statusCode.toString());
+}
+/*
+void main()=> runApp(const MyApp());
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -113,3 +141,4 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+*/
