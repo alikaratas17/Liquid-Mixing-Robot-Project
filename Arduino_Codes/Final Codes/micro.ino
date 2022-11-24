@@ -1,16 +1,16 @@
-#DEFINE ENABLE_MOTOR_A_PIN 9
-#DEFINE IN1_PIN 8
-#DEFINE IN2_PIN 7
+#define ENABLE_MOTOR_A_PIN 9
+#define IN1_PIN 8
+#define IN2_PIN 7
 
-#DEFINE ENABLE_MOTOR_B_PIN 3
-#DEFINE IN3_PIN 5
-#DEFINE IN4_PIN 4
+#define ENABLE_MOTOR_B_PIN 4
+#define IN3_PIN 5
+#define IN4_PIN 6
 
-#DEFINE ECHO_PIN 11
-#DEFINE TRIG_PIN 12
+#define ECHO_PIN 11
+#define TRIG_PIN 12
 
-#DEFINE EN_A_SPEED_CONTROL 155 // 0<= <=255
-#DEFINE EN_B_SPEED_CONTROL 155 // 0<= <=255
+#define EN_A_SPEED_CONTROL 255 // 0<= <=255
+#define EN_B_SPEED_CONTROL 255 // 0<= <=255
 
 
 
@@ -64,7 +64,7 @@ void stop_motors(){
   digitalWrite(IN1_PIN, LOW);
   digitalWrite(IN2_PIN, LOW);
   digitalWrite(IN3_PIN, LOW);
-  digitalWrite(IN_PIN, LOW);
+  digitalWrite(IN4_PIN, LOW);
 
 }
 // Returns the distance in cm using the distance sensor
