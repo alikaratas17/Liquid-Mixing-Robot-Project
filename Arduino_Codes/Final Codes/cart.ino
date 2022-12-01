@@ -1,14 +1,7 @@
 
 /*
 // PIN Setup if uno is used
-#define ENABLE_MOTOR_A_PIN 9
-#define IN1_PIN 8
-#define IN2_PIN 7
-#define ENABLE_MOTOR_B_PIN 4
-#define IN3_PIN 5
-#define IN4_PIN 6
-#define ECHO_PIN 11
-#define TRIG_PIN 12
+TODO
 */
 
 // PIN Setup if micro is used
@@ -18,27 +11,51 @@
 #define ENABLE_MOTOR_B_PIN 4
 #define IN3_PIN 5
 #define IN4_PIN 6
-#define ECHO_PIN 11
-#define TRIG_PIN 12
+#define ECHO_PIN_FORWARD 11
+#define TRIG_PIN_FORWARD 12
+#define ECHO_PIN_BACKWARD 13 //?
+#define TRIG_PIN_BACKWARD 14 //?
+
+//#define PINS OF BLUETOOTH
 
 #define EN_A_SPEED_CONTROL 255 // 0<= <=255
 #define EN_B_SPEED_CONTROL 255 // 0<= <=255
 
-
+int state; 
+#define WAITING_STATE 0
+#define MOVING_STATE 1
+#define SENDING_INFO_STATE 2
 
 void setup(){
   setup_pins();
   stop_motors();
   Serial.begin(9600); 
   Serial.println("Starting!!");
+  state = WAITING_STATE;
 }
 void loop(){
-  int dist = get_distance();
-  if (dist<30){
+  if(state == WAITING_STATE){
+    //BLUETOOTH COMM to get location
+    continue;
+  }
+  if(state == MOVING_STATE){
+  float forward_dist = get_distance(TRIG_PIN_FORWARD,ECHO_PIN_FORWARD);
+  float backward_dist = get_distance(TRIG_PIN_BACKWARD,ECHO_PIN_BACKWARD);
+  float total_length = forward_dist+backward_dist;
+  float position =  forward_dist / total_length;
+  // TODO: Move to location
+  if (position<0.5){
     go_forward();
   }else{
     stop_motors();
   }
+  continue;
+  }
+  if(state==SENDING_INFO_STATE){
+    //BLUETOOTH COMM to send location
+  }
+  // TODO: SHOULD THERE BE OTHER STATES
+  
 }
 // Set pins to be output or input
 void setup_pins(){
@@ -80,13 +97,13 @@ void stop_motors(){
 
 }
 // Returns the distance in cm using the distance sensor
-int get_distance(){
-  digitalWrite(TRIG_PIN, LOW); 
+float get_distance(int trig_pin, int echo_pin){
+  digitalWrite(trig_pin, LOW); 
   delayMicroseconds(2);
-  digitalWrite(TRIG_PIN, HIGH); 
+  digitalWrite(trig_pin, HIGH); 
   delayMicroseconds(10);
-  digitalWrite(TRIG_PIN, LOW);
-  long duration = pulseIn(ECHO_PIN, HIGH);
-  int distance = duration * 0.034 / 2;
+  digitalWrite(trig_pin, LOW);
+  double duration = (double) pulseIn(echo_pin, HIGH);
+  float distance = duration * 0.034 / 2;
   return distance;
 }
