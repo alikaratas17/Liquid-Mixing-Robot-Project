@@ -1,11 +1,23 @@
+
+/*
+// PIN Setup if uno is used
 #define ENABLE_MOTOR_A_PIN 9
 #define IN1_PIN 8
 #define IN2_PIN 7
-
 #define ENABLE_MOTOR_B_PIN 4
 #define IN3_PIN 5
 #define IN4_PIN 6
+#define ECHO_PIN 11
+#define TRIG_PIN 12
+*/
 
+// PIN Setup if micro is used
+#define ENABLE_MOTOR_A_PIN 9
+#define IN1_PIN 8
+#define IN2_PIN 7
+#define ENABLE_MOTOR_B_PIN 4
+#define IN3_PIN 5
+#define IN4_PIN 6
 #define ECHO_PIN 11
 #define TRIG_PIN 12
 
