@@ -26,6 +26,8 @@ int state;
 #define MOVING_STATE 1
 #define SENDING_INFO_STATE 2
 
+#define car_length 10.0
+
 void setup(){
   setup_pins();
   stop_motors();
@@ -36,22 +38,21 @@ void setup(){
 void loop(){
   if(state == WAITING_STATE){
     //BLUETOOTH COMM to get location
-    continue;
+
   }
-  if(state == MOVING_STATE){
+  else if(state == MOVING_STATE){
   float forward_dist = get_distance(TRIG_PIN_FORWARD,ECHO_PIN_FORWARD);
   float backward_dist = get_distance(TRIG_PIN_BACKWARD,ECHO_PIN_BACKWARD);
-  float total_length = forward_dist+backward_dist;
-  float position =  forward_dist / total_length;
+  float total_length = forward_dist+backward_dist + car_length;
+  float position =  backward_dist / total_length; // 0.0 1.0
   // TODO: Move to location
   if (position<0.5){
     go_forward();
   }else{
     stop_motors();
   }
-  continue;
   }
-  if(state==SENDING_INFO_STATE){
+  else if(state==SENDING_INFO_STATE){
     //BLUETOOTH COMM to send location
   }
   // TODO: SHOULD THERE BE OTHER STATES
