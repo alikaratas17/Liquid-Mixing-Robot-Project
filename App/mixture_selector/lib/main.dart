@@ -6,6 +6,8 @@ import 'package:http/http.dart' as http;
 
 void main()=> runApp(MyApp());
 class MyApp extends StatelessWidget{
+  var drinks = ["Lemon Juice", "Orange Juice", "Grenadine Juice", "Apple Juice"];
+  var amounts = [0.0,0.0,0.0,0.0];
   @override
   Widget build(BuildContext context){
     return MaterialApp(title: 'Select a Mixture',
@@ -15,10 +17,22 @@ class MyApp extends StatelessWidget{
       ElevatedButton(onPressed: opt2_func, child: Text('Option 2')),
       ElevatedButton(onPressed: opt3_func, child: Text('Option 3')),
       ElevatedButton(onPressed: opt4_func, child: Text('Option 4')),
+      ElevatedButton(onPressed: send_mixture, child: Text('Make Mixture')),
     ]),));
   }
-
+void send_mixture() async{
+  String my_url = 'https://io.adafruit.com/api/v2/akaratas17/feeds/message/data?X-AIO-Key='+ my_key.key;
+  double total = amounts.reduce((v, e) => v+e)+1e-12; // Check if this is valid to get sum
+  var percentages = [0,0,0,0];
+  for (int i = 0; i< 3; i++)
+    percentages[i] = (100.0*amounts[i]/total).round();
+  percentages[3] = 100 - percentages.reduce((v, e) => v+e); // Check if this is valid to get sum
+  String mixture = percentages[0].toString()+','+percentages[1].toString()+','+percentages[2].toString()+','+percentages[3].toString(); // Format should be 4 ints (percentages) separated by ','
+  final response = await http.post(Uri.parse(my_url),body:{'value':mixture});
+  print(response.statusCode.toString()); // For debugging
 }
+}
+
 void opt1_func() async{
   String my_url = 'https://io.adafruit.com/api/v2/akaratas17/feeds/message/data?X-AIO-Key='+ my_key.key;
   String option = "Option 1";
