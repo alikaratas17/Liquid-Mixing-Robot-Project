@@ -5,21 +5,51 @@ import 'package:http/http.dart' as http;
 
 
 void main()=> runApp(MyApp());
-class MyApp extends StatelessWidget{
+class MyApp extends StatefulWidget{
+  @override
+  State<StatefulWidget> createState() {
+    return MyAppState();
+  }
+}
+class MyAppState extends State<MyApp>{
   var drinks = ["Lemon Juice", "Orange Juice", "Grenadine Juice", "Apple Juice"];
   var amounts = [0.0,0.0,0.0,0.0];
   @override
   Widget build(BuildContext context){
     return MaterialApp(title: 'Select a Mixture',
     home:Scaffold(appBar: AppBar(title: Text('Why is this title different from prev?')),body: Column(children: [
+      Column(children:[Text(drinks[0]+" : "+amounts[0].toString()),ElevatedButton(onPressed: increase0, child: Text('Increase')),]),
+      Column(children:[Text(drinks[1]+" : "+amounts[1].toString()),ElevatedButton(onPressed: increase1, child: Text('Increase')),]),
+      Column(children:[Text(drinks[2]+" : "+amounts[2].toString()),ElevatedButton(onPressed: increase2, child: Text('Increase')),]),
+      Column(children:[Text(drinks[3]+" : "+amounts[3].toString()),ElevatedButton(onPressed: increase3, child: Text('Increase')),]),
       Text('Please Select one of below'),
-      ElevatedButton(onPressed: opt1_func, child: Text('Option 1')),
-      ElevatedButton(onPressed: opt2_func, child: Text('Option 2')),
-      ElevatedButton(onPressed: opt3_func, child: Text('Option 3')),
-      ElevatedButton(onPressed: opt4_func, child: Text('Option 4')),
+      //ElevatedButton(onPressed: opt1_func, child: Text('Option 1')),
+      //ElevatedButton(onPressed: opt2_func, child: Text('Option 2')),
+      //ElevatedButton(onPressed: opt3_func, child: Text('Option 3')),
+      //ElevatedButton(onPressed: opt4_func, child: Text('Option 4')),
       ElevatedButton(onPressed: send_mixture, child: Text('Make Mixture')),
     ]),));
   }
+void increase0(){
+  setState(() {
+    amounts[0]+=0.5;
+  });
+}
+void increase1(){
+  setState(() {
+    amounts[1]+=0.5;
+  });
+}
+void increase2(){
+  setState(() {
+    amounts[2]+=0.5;
+  });
+}
+void increase3(){
+  setState(() {
+    amounts[3]+=0.5;
+  });
+}
 void send_mixture() async{
   String my_url = 'https://io.adafruit.com/api/v2/akaratas17/feeds/message/data?X-AIO-Key='+ my_key.key;
   double total = amounts.reduce((v, e) => v+e)+1e-12; // Check if this is valid to get sum
