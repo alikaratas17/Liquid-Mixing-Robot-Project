@@ -16,6 +16,8 @@ TODO
 #define ECHO_PIN_BACKWARD 13 //?
 #define TRIG_PIN_BACKWARD 14 //?
 
+#include <SoftwareSerial.h>
+SoftwareSerial Bluetooth (3,2);
 //#define PINS OF BLUETOOTH
 
 #define EN_A_SPEED_CONTROL 255 // 0<= <=255
@@ -34,6 +36,7 @@ void setup(){
   Serial.begin(9600); 
   Serial.println("Starting!!");
   state = WAITING_STATE;
+  Bluetooth.begin(38400);
 }
 void loop(){
   if(state == WAITING_STATE){
@@ -108,3 +111,12 @@ float get_distance(int trig_pin, int echo_pin){
   float distance = duration * 0.034 / 2;
   return distance;
 }
+
+/*
+  if(Bluetooth.available()){
+    Serial.write(Bluetooth.read());
+  }
+  if(Serial.available()){
+    Bluetooth.write(Serial.read());
+  }
+*/

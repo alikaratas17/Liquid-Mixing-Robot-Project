@@ -1,4 +1,5 @@
-
+#include <SoftwareSerial.h>
+SoftwareSerial Bluetooth (3,2);
 /*
 // PIN Setup if huzzah is used
 
@@ -24,6 +25,7 @@ void setup(){
   Serial.println("Connecting to Adafruit IO");
   io.connect();
   message->onMessage(handleMessage);
+  Bluetooth.begin(38400);
   
 }
 void loop(){
@@ -65,3 +67,12 @@ void handleMessage(AdafruitIO_Data *data){
   Serial.println(inputs[3]);
   delay(500);
 }
+
+/*
+if(BTSerial.available()){
+    Serial.write(BTSerial.read());
+  }
+  if(Serial.available()){
+    BTSerial.write(Serial.read());
+  }
+*/
