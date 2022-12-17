@@ -18,8 +18,10 @@ TODO
 
 //#define PINS OF BLUETOOTH
 
-#define EN_A_SPEED_CONTROL 255 // 0<= <=255
-#define EN_B_SPEED_CONTROL 255 // 0<= <=255
+#define EN_A_SPEED_CONTROL 127 // 0<= <=255
+#define EN_B_SPEED_CONTROL 127 // 0<= <=255
+
+// go Delay(50) stop Delay(500)
 
 int state; 
 #define WAITING_STATE 0
