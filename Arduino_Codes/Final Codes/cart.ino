@@ -13,8 +13,8 @@ TODO
 #define IN4_PIN 6
 #define ECHO_PIN_FORWARD 11
 #define TRIG_PIN_FORWARD 12
-#define ECHO_PIN_BACKWARD 13 //?
-#define TRIG_PIN_BACKWARD 14 //?
+#define ECHO_PIN_BACKWARD A0 //?
+#define TRIG_PIN_BACKWARD A1 //?
 
 #include <SoftwareSerial.h>
 SoftwareSerial Bluetooth (3,2);
