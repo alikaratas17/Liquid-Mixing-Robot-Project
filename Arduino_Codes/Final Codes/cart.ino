@@ -8,13 +8,13 @@ TODO
 #define ENABLE_MOTOR_A_PIN 9
 #define IN1_PIN 8
 #define IN2_PIN 7
+#define IN3_PIN 6
+#define IN4_PIN 5
 #define ENABLE_MOTOR_B_PIN 4
-#define IN3_PIN 5
-#define IN4_PIN 6
 #define ECHO_PIN_FORWARD 11
 #define TRIG_PIN_FORWARD 12
-#define ECHO_PIN_BACKWARD 13 //?
-#define TRIG_PIN_BACKWARD 14 //?
+#define ECHO_PIN_BACKWARD A0 //?
+#define TRIG_PIN_BACKWARD A1 //?
 
 #include <SoftwareSerial.h>
 SoftwareSerial Bluetooth (3,2);
