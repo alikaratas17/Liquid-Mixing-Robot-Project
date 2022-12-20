@@ -1,24 +1,24 @@
 /* Description
-This code is for the arduino uno that will receive signal from huzzah
+This code is for the arduino mega that will receive signal from huzzah
 and pour specific liquids using pumps
 */
 
 
 
-
-// PIN Setup for arduino uno
-#define ENABLE_1 3 // ENA 1 PWM
-#define ENABLE_2 5 // ENB 1 PWM
-#define ENABLE_3 11 // ENA 2 PWM
-#define ENABLE_4 10 // ENB 2 PWM
-#define IN1_1 2 //IN1 1
+// PIN Setup for arduino mega
+#define ENABLE_1 2 // ENA 1 PWM
+#define IN1_1 3 //IN1 1
 #define IN1_2 4//IN2 1
-#define IN2_1 7 //IN3 1
+#define IN2_1 5 //IN3 1
 #define IN2_2 6 //IN4 1
-#define IN3_1 12 //IN1 2
-#define IN3_2 13 //IN2 2
-#define IN4_1 8 //IN3 2
-#define IN4_2 9 //IN4 2
+#define ENABLE_2 7 // ENB 1 PWM
+
+#define ENABLE_3 8 // ENA 2 PWM
+#define IN3_1 9 //IN1 2
+#define IN3_2 10 //IN2 2
+#define IN4_1 11 //IN3 2
+#define IN4_2 12 //IN4 2
+#define ENABLE_4 13 // ENB 2 PWM
 
 
 // Can be reduced to 3 if needed
@@ -27,67 +27,140 @@ and pour specific liquids using pumps
 #define HUZZAH_IN3 A2
 #define HUZZAH_IN4 A3
 
+#define HUZZAH_OUT A4
+
+#define BL_RX A7
+#define BL_TX A6
+
+#define HIGH3_3V 153
 
 
 
 #define ENABLE_AMOUNT 255 // 0 <= x <= 255
 
-#define DEBUG_MODE 1
+#define ANALOG_READ_TRESHOLD 511
 
 // States
-#define NO_ACTION 0
-#define ACTION1 1
-#define ACTION2 2
-#define ACTION3 3
-#define ACTION4 4
+#define GET_NEXT_LIQUID_ADDRESS 0
+#define WAIT_FOR_GO 1
+#define POUR 2
+
+
+#include <SoftwareSerial.h>
+SoftwareSerial Bluetooth (BL_RX,BL_TX);
 
 int state;
-int next_state;
+
+int current_liquid;
+int sent_signal;
+
+
 void setup(){
   setup_pins();
   Serial.begin(9600); 
   Serial.println("Starting!!");
-  state = NO_ACTION;
-  next_state = NO_ACTION;
+  Bluetooth.begin(38400);
+  state = GET_NEXT_LIQUID_ADDRESS;
+  current_liquid = 0;
+  sent_signal = 0;
 }
+
 void loop(){
-  pour_drink();
-  int is_on = digitalRead(HUZZAH_IN1);
-  if (is_on){
-    if (DEBUG_MODE)
-    Serial.println("HUZZAH1");
-    next_state = ACTION1;
-    return;
-  }
-  is_on = digitalRead(HUZZAH_IN2);
-  if (is_on){
-    if (DEBUG_MODE)
-    Serial.println("HUZZAH2");
-    next_state = ACTION2;
-    return;
+  if (state == GET_NEXT_LIQUID_ADDRESS){
+    wait_for_input();
+    if (current_liquid !=0){
+      state = WAIT_FOR_GO;
+    }
+  }else if (state == WAIT_FOR_GO){
+    wait_to_go();
 
+  }else if (state == POUR){
+    pour_drink();
   }
-  is_on = digitalRead(HUZZAH_IN3);
-  if (is_on){
-    if (DEBUG_MODE)
-    Serial.println("HUZZAH3");
-    next_state = ACTION3;
-    return;
 
-  }
-  is_on = digitalRead(HUZZAH_IN4);
-  if (is_on){
-    if (DEBUG_MODE)
-    Serial.println("HUZZAH4");
-    next_state = ACTION4;
-    return;
-
-  }
-  if (DEBUG_MODE)
-    Serial.println("No HUZZAH INPUT");
-  next_state = NO_ACTION;
-  //delay(20); // Might consider changing this or removing this
 }
+void pour_drink(){
+  analogWrite(HUZZAH_OUT,HIGH3_3V);
+  if(current_liquid==1){
+    pour_drink1();
+  }else if(current_liquid==2){
+    pour_drink2();
+  }else if(current_liquid==3){
+    pour_drink3();
+  }else if(current_liquid==4){
+    pour_drink4();
+  } 
+}
+void pour_drink1(){
+  while(analogRead(HUZZAH_IN1)< ANALOG_READ_TRESHOLD);//wait to start
+  analogWrite(HUZZAH_OUT,0);
+  turn_on1();
+  while(analogRead(HUZZAH_IN1)> ANALOG_READ_TRESHOLD);//wait to end
+  turn_off1();
+  current_liquid = 0;
+  state = GET_NEXT_LIQUID_ADDRESS;
+}
+void pour_drink2(){
+  while(analogRead(HUZZAH_IN2)< ANALOG_READ_TRESHOLD);//wait to start
+  analogWrite(HUZZAH_OUT,0);
+  turn_on2();
+  while(analogRead(HUZZAH_IN2)> ANALOG_READ_TRESHOLD);//wait to end
+  turn_off2();
+  current_liquid = 0;
+  state = GET_NEXT_LIQUID_ADDRESS;
+}
+void pour_drink3(){
+  while(analogRead(HUZZAH_IN3)< ANALOG_READ_TRESHOLD);//wait to start
+  analogWrite(HUZZAH_OUT,0);
+  turn_on3();
+  while(analogRead(HUZZAH_IN3)> ANALOG_READ_TRESHOLD);//wait to end
+  turn_off3();
+  current_liquid = 0;
+  state = GET_NEXT_LIQUID_ADDRESS;
+}
+void pour_drink4(){
+  while(analogRead(HUZZAH_IN4)< ANALOG_READ_TRESHOLD);//wait to start
+  analogWrite(HUZZAH_OUT,0);
+  turn_on4();
+  while(analogRead(HUZZAH_IN4)> ANALOG_READ_TRESHOLD);//wait to end
+  turn_off4();
+  current_liquid = 0;
+  state = GET_NEXT_LIQUID_ADDRESS;
+}
+void wait_to_go(){
+  if (sent_signal==0){
+    Bluetooth.write(current_liquid);
+    sent_signal = 1;
+  }
+  while(sent_signal == 1){
+  if(Bluetooth.available()){
+   if (Bluetooth.read() == 1){
+     sent_signal = 0;
+   }
+  }
+  }
+  state = POUR;
+}
+
+void wait_for_input(){
+  if(analogRead(HUZZAH_IN1)>= ANALOG_READ_TRESHOLD){
+    current_liquid = 1;
+
+  }else if(analogRead(HUZZAH_IN2)>= ANALOG_READ_TRESHOLD){
+    current_liquid = 2;
+
+  }else if(analogRead(HUZZAH_IN3)>= ANALOG_READ_TRESHOLD){
+    current_liquid = 3;
+
+  }else if(analogRead(HUZZAH_IN4)>= ANALOG_READ_TRESHOLD){
+    current_liquid = 4;
+  }else{
+    return;
+  }
+
+
+}
+
 // Set pins to be output or input
 void setup_pins(){
   pinMode(ENABLE_1, OUTPUT);
@@ -106,35 +179,9 @@ void setup_pins(){
   pinMode(HUZZAH_IN2, INPUT);
   pinMode(HUZZAH_IN3, INPUT);
   pinMode(HUZZAH_IN4, INPUT);
-}
-void pour_drink(){
-  if(state==next_state)
-    return;
-  if(state==ACTION1){
-    turn_off1();
 
-  }else if(state==ACTION2){
-    turn_off2();
+  pinMode(HUZZAH_OUT, OUTPUT);
 
-  }else if(state==ACTION3){
-    turn_off3();
-
-  }else if(state==ACTION4){
-    turn_off4();
-
-  }
-  state = next_state;
-  if(next_state==ACTION1){
-    turn_on1();
-  }else if(next_state==ACTION2){
-    turn_on2();
-
-  }else if(next_state==ACTION3){
-    turn_on3();
-
-  }else if(next_state==ACTION4){
-    turn_on4();
-  }
 }
 
 void turn_on1(){

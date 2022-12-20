@@ -1,5 +1,4 @@
-#include <SoftwareSerial.h>
-SoftwareSerial Bluetooth (3,2);
+
 /*
 // PIN Setup if huzzah is used
 
@@ -8,11 +7,22 @@ SoftwareSerial Bluetooth (3,2);
 #define HUZZAH_OUT2 12
 #define HUZZAH_OUT3 14
 #define HUZZAH_OUT4 16
-int state; 
-#define WAITING_FOR_MESSAGE_STATE 0
+#define HUZZAH_REVERSE_WAY 15
+
+/*
+Waiting for message from server
+For i = 1,2,3,4
+  Send pump index to the mega
+  Wait for confirmation
+  Turn on that pump for that a given amount of time
+Go back to waiting for message
+*/
+
+
+
+#define WAITING_FOR_INITIAL_MESSAGE_STATE 0
 #define WAITING_FOR_MOVEMENT_STATE 1
 #define DISPENSING_STATE 2
-#define WAITING_FOR_MOVEMENT_CONFIRMATION 3
 
 
 #define AMOUNT_CONST 1.0
@@ -22,19 +32,24 @@ int state;
 
 AdafruitIO_Feed *message = io.feed("message");
 
+int state; 
 
 double amounts[4];
 int current_liquid;
 void setup(){
   setup_pins();
-  state = WAITING_FOR_MESSAGE_STATE;
+  state = WAITING_FOR_INITIAL_MESSAGE_STATE;
   Serial.begin(115200);
   while(!Serial);
   Serial.println("----");
   Serial.println("Connecting to Adafruit IO");
   io.connect();
+  while(io.status()< AIO_CONNECTED){
+    Serial.println(io.statusText());
+    delay(500);
+  }
+
   message->onMessage(handleMessage);
-  Bluetooth.begin(38400);
   amounts[0]=0.0;
   amounts[1]=0.0;
   amounts[2]=0.0;
@@ -43,32 +58,43 @@ void setup(){
   
 }
 void loop(){
-  if(state==WAITING_FOR_MESSAGE_STATE){
-  io.run();
-  delay(20);
+  if(state==WAITING_FOR_INITIAL_MESSAGE_STATE){
+    Serial.println(">> Waiting for Initial Message State");
+    while(io.status()< AIO_CONNECTED){
+      Serial.println("Connection Error");
+      delay(500);
+    }
+    io.run();
+    delay(20);
 
   }else if(state == WAITING_FOR_MOVEMENT_STATE){
-    Bluetooth.write(current);
-
-  }else if(state == WAITING_FOR_MOVEMENT_CONFIRMATION){
-
+    Serial.println(">> Movement State");
+    send_movement();
   }else if(state == DISPENSING_STATE){
+    Serial.println(">> Dispensing State");
     dispense();
     current_liquid ++;
     if (current_liquid > 4){
-      state = WAITING_FOR_MESSAGE_STATE;
+      state = WAITING_FOR_INITIAL_MESSAGE_STATE;
+      amounts[0]=0.0;
+      amounts[1]=0.0;
+      amounts[2]=0.0;
+      amounts[3]=0.0;
+      current_liquid = 0;
     }
   }
 }
 // Set pins to be output or input
 void setup_pins(){
-  
-
-
+  pinMode(HUZZAH_REVERSE_WAY,INPUT);
+  pinMode(HUZZAH_OUT1,OUTPUT);
+  pinMode(HUZZAH_OUT2,OUTPUT);
+  pinMode(HUZZAH_OUT3,OUTPUT);
+  pinMode(HUZZAH_OUT4,OUTPUT);
 }
 
 void handleMessage(AdafruitIO_Data *data){
-  if (state != WAITING_FOR_MESSAGE_STATE){
+  if (state != WAITING_FOR_INITIAL_MESSAGE_STATE){
     Serial.println("Not Waiting for message");
     return;
   }
@@ -90,10 +116,13 @@ void handleMessage(AdafruitIO_Data *data){
   }
   String substr = result.substring(current,result.length());
   inputs[3] = substr.toInt();
-  Serial.println("__________");
-  Serial.println(inputs[0]);
-  Serial.println(inputs[1]);
-  Serial.println(inputs[2]);
+  Serial.println("Received Amounts:");
+  Serial.print(inputs[0]);
+  Serial.println(", ");
+  Serial.print(inputs[1]);
+  Serial.println(", ");
+  Serial.print(inputs[2]);
+  Serial.println(", ");
   Serial.println(inputs[3]);
   amounts[0] = inputs[0]*AMOUNT_CONST;
   amounts[1] = inputs[1]*AMOUNT_CONST;
@@ -101,6 +130,7 @@ void handleMessage(AdafruitIO_Data *data){
   amounts[3] = inputs[3]*AMOUNT_CONST;
   delay(500);
   current_liquid = 1;
+  state = WAITING_FOR_MOVEMENT_STATE;
 }
 
 void dispense(){
@@ -144,4 +174,37 @@ void turn_off3(){
 digitalWrite(HUZZAH_OUT3,LOW);}
 void turn_off4(){
 digitalWrite(HUZZAH_OUT4,LOW);}
+
+void send_movement(){
+  while(digitalRead(HUZZAH_REVERSE_WAY) == HIGH){
+    delay(100);
+    Serial.print("Waiting for Huzzah REVERSE to be LOW ");
+    Serial.println(current_liquid);
+  }
+  if (current_liquid==1){
+    turn_on1();
+  }else if (current_liquid==2){
+    turn_on2();
+  }else if (current_liquid==3){
+    turn_on3();
+  }else if (current_liquid==4){
+    turn_on4();
+  }
+  while(digitalRead(HUZZAH_REVERSE_WAY) == LOW){
+    delay(100);
+    Serial.print("Waiting for movement to liquid ");
+    Serial.println(current_liquid);
+  }
+  if (current_liquid==1){
+    turn_off1();
+  }else if (current_liquid==2){
+    turn_off2();
+  }else if (current_liquid==3){
+    turn_off3();
+  }else if (current_liquid==4){
+    turn_off4();
+  }
+  state = DISPENSING_STATE;
+
+
 }
