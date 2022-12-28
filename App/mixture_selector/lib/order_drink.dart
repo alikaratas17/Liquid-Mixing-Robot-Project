@@ -14,6 +14,7 @@ class MyOrderScreenState extends State<MyOrderScreen>{
   var drinks = ["Lemon Juice", "Orange Juice", "Grenadine Juice", "Apple Juice"];
   //var amounts = [0.0,0.0,0.0,0.0];
   late List<MyDrinkWidget> drink_widgets;
+  String message = "";
 
   MyOrderScreenState(){
     this.drink_widgets = drinks.map((x){return MyDrinkWidget(x);}).toList();
@@ -21,11 +22,14 @@ class MyOrderScreenState extends State<MyOrderScreen>{
   @override
   Widget build(BuildContext context){
     //return //MaterialApp(title:"Select a Mixture",home:
-    return Scaffold(appBar: AppBar(title: Text('Mixture Selection')),
-    body: Column(children:
-          [Column(children: this.drink_widgets,),
+    return Scaffold(appBar: AppBar(title: Text('Custom Mixture Selection')),
+    body: Container(alignment: Alignment.center, child: Column(children:
+
+          [Text(message),
+          Column(children: this.drink_widgets,),
           ElevatedButton(onPressed: send_mixture, child: Text('Make Mixture'))]
-           ,)
+           ,),)
+     
     );//);
     /*
     return MaterialApp(title: 'Select a Mixture',
@@ -63,12 +67,16 @@ void increase3(){
 void send_mixture() async{
 
   String my_url = 'https://io.adafruit.com/api/v2/akaratas17/feeds/message/data?X-AIO-Key='+ my_key.key;
-  var amounts = [0,0,0,0];
+  var amounts = [0.0,0.0,0.0,0.0];
   amounts[0] +=this.drink_widgets[0].my_state.amount;
   amounts[1] +=this.drink_widgets[1].my_state.amount;
   amounts[2] +=this.drink_widgets[2].my_state.amount;
   amounts[3] +=this.drink_widgets[3].my_state.amount;
-
+  String tmp_message = "Order Received\n";
+  for (int i = 0; i < 4; i++){
+    if(this.drink_widgets[i].my_state.amount>0)
+      tmp_message = tmp_message + this.drink_widgets[i].my_state.name +" : "+this.drink_widgets[i].my_state.amount.toString()+" mL \n";
+  } 
   this.drink_widgets[0].my_state.reset();
   this.drink_widgets[1].my_state.reset();
   this.drink_widgets[2].my_state.reset();
@@ -84,6 +92,11 @@ void send_mixture() async{
   String mixture = amounts[0].toString()+','+amounts[1].toString()+','+amounts[2].toString()+','+amounts[3].toString(); // Format should be 4 ints (amounts) separated by ','
   final response = await http.post(Uri.parse(my_url),body:{'value':mixture});
   print(response.statusCode.toString()); // For debugging
+  
+  
+  setState(() {
+    message=tmp_message;
+  });
 }
 }
 /*

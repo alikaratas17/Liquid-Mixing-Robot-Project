@@ -12,13 +12,14 @@ class MyApplication extends StatelessWidget{
 class MyHomePage extends StatelessWidget{
   @override
   Widget build(BuildContext context) { 
-    return Scaffold(appBar: AppBar(title: Text('Mixture Selection')),
-    body: 
-          ElevatedButton(onPressed: (){
+    return Scaffold(appBar: AppBar(title: Text('Mixture Selection Homepage')),
+    body: Container(alignment: Alignment.center,child: ElevatedButton(onPressed: (){
             Navigator.of(context).push(MaterialPageRoute(builder: (context) => MyOrderScreen()));
           }
-          , child: const Text('Make Mixture'))
-           //,)
+          , child: const Text('Make Custom Mixture')),
+    )
+          
+           
     );
   }
 

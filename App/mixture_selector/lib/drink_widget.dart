@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'my_key.dart' as my_key;
-import 'package:http/http.dart' as http;
 
 
 
@@ -19,15 +17,28 @@ class MyDrinkWidgetState extends State<MyDrinkWidget>{
   //var drinks = ["Lemon Juice", "Orange Juice", "Grenadine Juice", "Apple Juice"];
   //var amounts = [0.0,0.0,0.0,0.0];
   var name;
-  var amount = 0;
+  double amount = 0.0;
+  double max_amount = 50.0;
   MyDrinkWidgetState(this.name);
   @override
   Widget build(BuildContext context){
-    return Column(children:[Text(name+" : "+amount.toString(),textAlign: TextAlign.center,),
-    Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,children: [
-    ElevatedButton(onPressed: increase, child: Text('Increase')),
-    ElevatedButton(onPressed: decrease, child: Text('Decrease')),
-    ])
+    return Column(children:[Text(name+" : "+amount.toString()+" mL",textAlign: TextAlign.center,),
+    //Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,children: [
+    //ElevatedButton(onPressed: increase, child: Text('Increase')),
+    //ElevatedButton(onPressed: decrease, child: Text('Decrease')),
+    Slider(
+      value: amount,
+      max:max_amount,
+      divisions:(max_amount/5).round(),
+      label:amount.toString(),
+      onChanged:(double value){
+        if (value <= max_amount){
+        setState((){
+          amount = value;
+        });
+        }
+      })
+    //])
     ]
     );
   }
