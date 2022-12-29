@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 
 class MyDrinkWidget extends StatefulWidget{
   late MyDrinkWidgetState my_state;
-  MyDrinkWidget(name){
-    this.my_state =  MyDrinkWidgetState(name);
+  MyDrinkWidget(name,is_checked){
+    this.my_state =  MyDrinkWidgetState(name,is_checked);
   }
 
   @override
@@ -17,12 +17,20 @@ class MyDrinkWidgetState extends State<MyDrinkWidget>{
   //var drinks = ["Lemon Juice", "Orange Juice", "Grenadine Juice", "Apple Juice"];
   //var amounts = [0.0,0.0,0.0,0.0];
   var name;
+  var is_checked;
+  var text_to_write;
   double amount = 0.0;
   double max_amount = 50.0;
-  MyDrinkWidgetState(this.name);
+  MyDrinkWidgetState(name,is_checked){
+    this.name = name;
+    this.is_checked = is_checked;
+    this.text_to_write =   name+" : "+amount.toString()+ " ml";
+    if (is_checked)
+      this.text_to_write =   name+" : "+amount.toString()+ " part";
+  }
   @override
   Widget build(BuildContext context){
-    return Column(children:[Text(name+" : "+amount.toString()+" mL",textAlign: TextAlign.center,),
+    return Column(children:[Text(text_to_write,textAlign: TextAlign.center,),
     //Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,children: [
     //ElevatedButton(onPressed: increase, child: Text('Increase')),
     //ElevatedButton(onPressed: decrease, child: Text('Decrease')),
@@ -35,6 +43,7 @@ class MyDrinkWidgetState extends State<MyDrinkWidget>{
         if (value <= max_amount){
         setState((){
           amount = value;
+  text_to_write = getNewText();
         });
         }
       })
@@ -57,5 +66,18 @@ void reset(){
   setState((){
     amount = 0;
   });
+}
+void changeText(is_checked){
+    this.is_checked = is_checked;
+    setState(() {
+  text_to_write = getNewText();
+    });
+}
+String getNewText(){
+    var part_or_ml=" ml";
+    if(this.is_checked){
+      part_or_ml = " part";
+    }
+  return name+" : "+amount.toString()+part_or_ml;
 }
 }

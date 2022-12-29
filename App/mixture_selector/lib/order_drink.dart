@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'my_key.dart' as my_key;
 import 'package:http/http.dart' as http;
@@ -11,59 +13,53 @@ class MyOrderScreen extends StatefulWidget{
   }
 }
 class MyOrderScreenState extends State<MyOrderScreen>{
+  bool _ischecked = false;
   var drinks = ["Lemon Juice", "Orange Juice", "Grenadine Juice", "Apple Juice"];
   //var amounts = [0.0,0.0,0.0,0.0];
   late List<MyDrinkWidget> drink_widgets;
   String message = "";
 
   MyOrderScreenState(){
-    this.drink_widgets = drinks.map((x){return MyDrinkWidget(x);}).toList();
+    this.drink_widgets = drinks.map((x){return MyDrinkWidget(x,_ischecked);}).toList();
   }
   @override
   Widget build(BuildContext context){
+    Color getColor(Set<MaterialState> states) {
+      const Set<MaterialState> interactiveStates = <MaterialState>{
+        MaterialState.pressed,
+        MaterialState.hovered,
+        MaterialState.focused,
+      };
+      if (states.any(interactiveStates.contains)) {
+        return Colors.blue;
+      }
+      return Colors.red;
+    }
     //return //MaterialApp(title:"Select a Mixture",home:
     return Scaffold(appBar: AppBar(title: Text('Custom Mixture Selection')),
     body: Container(alignment: Alignment.center, child: Column(children:
 
           [Text(message),
           Column(children: this.drink_widgets,),
+          Container(child: Row(children: [Text("Percentage"),Checkbox(
+      checkColor: Colors.white,
+      fillColor: MaterialStateProperty.resolveWith(getColor),
+      value: _ischecked,
+      onChanged: (bool? value) {
+        setState(() {
+          _ischecked = value!;
+        for (int i = 0; i< 4; i++)
+            this.drink_widgets[i].my_state.changeText(_ischecked);
+        });
+      },
+    )],),alignment: Alignment.center)
+          
+          ,
           ElevatedButton(onPressed: send_mixture, child: Text('Make Mixture'))]
            ,),)
      
-    );//);
-    /*
-    return MaterialApp(title: 'Select a Mixture',
-    home:Scaffold(appBar: AppBar(title: Text('Mixture Selection')),body: Column(children: [
-      Column(children:[Text(drinks[0]+" : "+amounts[0].toString()),ElevatedButton(onPressed: increase0, child: Text('Increase')),]),
-      Column(children:[Text(drinks[1]+" : "+amounts[1].toString()),ElevatedButton(onPressed: increase1, child: Text('Increase')),]),
-      Column(children:[Text(drinks[2]+" : "+amounts[2].toString()),ElevatedButton(onPressed: increase2, child: Text('Increase')),]),
-      Column(children:[Text(drinks[3]+" : "+amounts[3].toString()),ElevatedButton(onPressed: increase3, child: Text('Increase')),]),
-      Text('Please Select one of below'),
-      ElevatedButton(onPressed: send_mixture, child: Text('Make Mixture')),
-    ]),));
-    */
+    );
   }
-  /*
-void increase0(){
-  setState(() {
-    amounts[0]+=0.5;
-  });
-}
-void increase1(){
-  setState(() {
-    amounts[1]+=0.5;
-  });
-}
-void increase2(){
-  setState(() {
-    amounts[2]+=0.5;
-  });
-}
-void increase3(){
-  setState(() {
-    amounts[3]+=0.5;
-  });
-}*/
 void send_mixture() async{
 
   String my_url = 'https://io.adafruit.com/api/v2/akaratas17/feeds/message/data?X-AIO-Key='+ my_key.key;
