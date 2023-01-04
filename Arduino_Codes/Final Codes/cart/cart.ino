@@ -17,7 +17,7 @@ TODO
 #define TRIG_PIN_BACKWARD A1 //?
 
 #include <SoftwareSerial.h>
-SoftwareSerial Bluetooth (3,2);
+SoftwareSerial Bluetooth (MISO,A3);
 //#define PINS OF BLUETOOTH
 
 #define EN_A_SPEED_CONTROL 127 // 0<= <=255
