@@ -41,6 +41,9 @@ void setup(){
   Bluetooth.begin(38400);
 }
 void loop(){
+  get_current_pos();
+  delay(500);
+  return;
   if(state == WAITING_STATE){
     //BLUETOOTH COMM to get location
 
@@ -71,8 +74,10 @@ void setup_pins(){
   pinMode(IN2_PIN, OUTPUT);
   pinMode(IN3_PIN, OUTPUT);
   pinMode(IN4_PIN, OUTPUT);
-  pinMode(TRIG_PIN, OUTPUT); 
-  pinMode(ECHO_PIN, INPUT); 
+  pinMode(TRIG_PIN_FORWARD, OUTPUT); 
+  pinMode(ECHO_PIN_FORWARD, INPUT); 
+  pinMode(TRIG_PIN_BACKWARD, OUTPUT); 
+  pinMode(ECHO_PIN_BACKWARD, INPUT); 
 
 }
 // Turns motors in forward direction
@@ -122,3 +127,15 @@ float get_distance(int trig_pin, int echo_pin){
     Bluetooth.write(Serial.read());
   }
 */
+/*
+Returns 1.0,2.0,3.0,4.0 if at corresponding pumps, else returns between [0,5] depending on distances
+*/
+float get_current_pos(){
+  float fdist = get_distance(TRIG_PIN_FORWARD,ECHO_PIN_FORWARD);
+  float bdist = get_distance(TRIG_PIN_BACKWARD,ECHO_PIN_BACKWARD);
+  Serial.print("Forward: ");
+  Serial.print(fdist);
+  Serial.print(", Backward: ");
+  Serial.println(bdist);
+  return 1.0; //TODO
+}
