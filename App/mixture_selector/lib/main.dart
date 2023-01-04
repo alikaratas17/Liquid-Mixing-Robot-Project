@@ -7,4 +7,4 @@ import 'order_drink.dart';
 import 'homepage.dart';
 
 //void main()=> runApp(MyOrderScreen());
-void main()=> runApp(MyApplication());
+void main() => runApp(MyApplication());

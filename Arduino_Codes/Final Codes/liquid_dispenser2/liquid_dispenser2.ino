@@ -29,8 +29,8 @@ and pour specific liquids using pumps
 
 #define HUZZAH_OUT A4
 
-#define BL_RX A7
-#define BL_TX A6
+#define BL_RX 39
+#define BL_TX 38
 
 #define HIGH3_3V 153
 
@@ -60,6 +60,7 @@ void setup(){
   Serial.begin(9600); 
   Serial.println("Starting!!");
   Bluetooth.begin(38400);
+  //Bluetooth.println("TESTING");
   state = GET_NEXT_LIQUID_ADDRESS;
   current_liquid = 0;
   sent_signal = 0;
@@ -67,14 +68,21 @@ void setup(){
 
 void loop(){
   if (state == GET_NEXT_LIQUID_ADDRESS){
+  Serial.println("Waiting For input");
     wait_for_input();
     if (current_liquid !=0){
       state = WAIT_FOR_GO;
+      Serial.print("Time to go with liquid ");
+      Serial.println(current_liquid);
     }
   }else if (state == WAIT_FOR_GO){
+    Serial.print("Waiting to go");
+    Serial.println(current_liquid);
     wait_to_go();
 
   }else if (state == POUR){
+    Serial.print("POURING DRINK");
+    Serial.println(current_liquid);
     pour_drink();
   }
 
@@ -130,10 +138,15 @@ void pour_drink4(){
 void wait_to_go(){
   if (sent_signal==0){
     Bluetooth.write(current_liquid);
+    Serial.println("SENT MESSAGE");
+    Serial.println(current_liquid);
     sent_signal = 1;
   }
   while(sent_signal == 1){
   if(Bluetooth.available()){
+    int message = Bluetooth.read();
+    Serial.println("GOT MESSAGE");
+    Serial.println(message);
    if (Bluetooth.read() == 1){
      sent_signal = 0;
    }
