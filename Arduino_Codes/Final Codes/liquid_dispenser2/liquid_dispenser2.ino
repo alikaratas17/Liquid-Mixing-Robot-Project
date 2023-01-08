@@ -32,7 +32,6 @@ and pour specific liquids using pumps
 #define BL_RX 50
 #define BL_TX 51
 
-#define HIGH3_3V 153
 
 
 
@@ -88,7 +87,7 @@ void loop(){
 
 }
 void pour_drink(){
-  analogWrite(HUZZAH_OUT,HIGH3_3V);
+  digitalWrite(HUZZAH_OUT,HIGH);
   if(current_liquid==1){
     pour_drink1();
   }else if(current_liquid==2){
@@ -101,7 +100,7 @@ void pour_drink(){
 }
 void pour_drink1(){
   while(analogRead(HUZZAH_IN1)< ANALOG_READ_TRESHOLD);//wait to start
-  analogWrite(HUZZAH_OUT,0);
+  digitalWrite(HUZZAH_OUT,LOW);
   turn_on1();
   while(analogRead(HUZZAH_IN1)> ANALOG_READ_TRESHOLD);//wait to end
   turn_off1();
@@ -110,7 +109,7 @@ void pour_drink1(){
 }
 void pour_drink2(){
   while(analogRead(HUZZAH_IN2)< ANALOG_READ_TRESHOLD);//wait to start
-  analogWrite(HUZZAH_OUT,0);
+  digitalWrite(HUZZAH_OUT,LOW);
   turn_on2();
   while(analogRead(HUZZAH_IN2)> ANALOG_READ_TRESHOLD);//wait to end
   turn_off2();
@@ -119,7 +118,7 @@ void pour_drink2(){
 }
 void pour_drink3(){
   while(analogRead(HUZZAH_IN3)< ANALOG_READ_TRESHOLD);//wait to start
-  analogWrite(HUZZAH_OUT,0);
+  digitalWrite(HUZZAH_OUT,LOW);
   turn_on3();
   while(analogRead(HUZZAH_IN3)> ANALOG_READ_TRESHOLD);//wait to end
   turn_off3();
@@ -128,7 +127,7 @@ void pour_drink3(){
 }
 void pour_drink4(){
   while(analogRead(HUZZAH_IN4)< ANALOG_READ_TRESHOLD);//wait to start
-  analogWrite(HUZZAH_OUT,0);
+  digitalWrite(HUZZAH_OUT,LOW);
   turn_on4();
   while(analogRead(HUZZAH_IN4)> ANALOG_READ_TRESHOLD);//wait to end
   turn_off4();
@@ -170,7 +169,7 @@ void wait_for_input(){
   }else{
     return;
   }
-
+  
 
 }
 

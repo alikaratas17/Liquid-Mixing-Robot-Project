@@ -74,6 +74,7 @@ void loop(){
     Serial.println(">> Dispensing State");
     dispense();
     current_liquid ++;
+    state = WAITING_FOR_MOVEMENT_STATE;
     if (current_liquid > 4){
       state = WAITING_FOR_INITIAL_MESSAGE_STATE;
       amounts[0]=0.0;
