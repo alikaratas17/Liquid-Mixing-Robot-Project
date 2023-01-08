@@ -29,8 +29,8 @@ and pour specific liquids using pumps
 
 #define HUZZAH_OUT A4
 
-#define BL_RX 39
-#define BL_TX 38
+#define BL_RX 50
+#define BL_TX 51
 
 #define HIGH3_3V 153
 
@@ -67,13 +67,6 @@ void setup(){
 }
 
 void loop(){
-  if(Bluetooth.available()){
-    Serial.write(Bluetooth.read());
-  }
-  if(Serial.available()){
-    Bluetooth.write(Serial.read());
-  }
-  return;
   if (state == GET_NEXT_LIQUID_ADDRESS){
   Serial.println("Waiting For input");
     wait_for_input();
@@ -154,7 +147,7 @@ void wait_to_go(){
     int message = Bluetooth.read();
     Serial.println("GOT MESSAGE");
     Serial.println(message);
-   if (Bluetooth.read() == 1){
+   if (message == 1){
      sent_signal = 0;
    }
   }

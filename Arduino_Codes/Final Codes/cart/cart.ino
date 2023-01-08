@@ -44,10 +44,14 @@ void setup(){
 }
 void loop(){
     if(Bluetooth.available()){
-    Serial.write(Bluetooth.read());
+      int c1 = Bluetooth.read();
+      if(c1>=0 && c1 < 5)
+        Serial.write(c1+48);
   }
   if(Serial.available()){
-    Bluetooth.write(Serial.read());
+    int c = Serial.read();
+    if(c>=48 && c < 48+5) 
+      Bluetooth.write(c-48);
   }
   return;
   int status =  go_to_pump(pumps_to_go[current_pmp]);
