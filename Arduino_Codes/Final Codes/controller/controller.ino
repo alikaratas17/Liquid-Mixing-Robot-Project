@@ -139,6 +139,11 @@ void dispense(){
   if(delay_amount==0){
     return;
   }
+  while(digitalRead(HUZZAH_REVERSE_WAY) == HIGH){
+    delay(100);
+    Serial.print("Waiting (to dispense) for Huzzah REVERSE to be LOW ");
+    Serial.println(current_liquid);
+  }
   if(current_liquid==1){
     turn_on1();
   }else if(current_liquid==2){

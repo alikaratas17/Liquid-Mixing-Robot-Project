@@ -56,6 +56,7 @@ int sent_signal;
 
 void setup(){
   setup_pins();
+  digitalWrite(HUZZAH_OUT,LOW);
   Serial.begin(9600); 
   Serial.println("Starting!!");
   Bluetooth.begin(38400);
@@ -87,7 +88,7 @@ void loop(){
 
 }
 void pour_drink(){
-  digitalWrite(HUZZAH_OUT,HIGH);
+  digitalWrite(HUZZAH_OUT,LOW);
   if(current_liquid==1){
     pour_drink1();
   }else if(current_liquid==2){
@@ -100,7 +101,7 @@ void pour_drink(){
 }
 void pour_drink1(){
   while(analogRead(HUZZAH_IN1)< ANALOG_READ_TRESHOLD);//wait to start
-  digitalWrite(HUZZAH_OUT,LOW);
+  //digitalWrite(HUZZAH_OUT,LOW);
   turn_on1();
   while(analogRead(HUZZAH_IN1)> ANALOG_READ_TRESHOLD);//wait to end
   turn_off1();
@@ -109,7 +110,7 @@ void pour_drink1(){
 }
 void pour_drink2(){
   while(analogRead(HUZZAH_IN2)< ANALOG_READ_TRESHOLD);//wait to start
-  digitalWrite(HUZZAH_OUT,LOW);
+  //digitalWrite(HUZZAH_OUT,LOW);
   turn_on2();
   while(analogRead(HUZZAH_IN2)> ANALOG_READ_TRESHOLD);//wait to end
   turn_off2();
@@ -118,7 +119,7 @@ void pour_drink2(){
 }
 void pour_drink3(){
   while(analogRead(HUZZAH_IN3)< ANALOG_READ_TRESHOLD);//wait to start
-  digitalWrite(HUZZAH_OUT,LOW);
+  //digitalWrite(HUZZAH_OUT,LOW);
   turn_on3();
   while(analogRead(HUZZAH_IN3)> ANALOG_READ_TRESHOLD);//wait to end
   turn_off3();
@@ -127,7 +128,7 @@ void pour_drink3(){
 }
 void pour_drink4(){
   while(analogRead(HUZZAH_IN4)< ANALOG_READ_TRESHOLD);//wait to start
-  digitalWrite(HUZZAH_OUT,LOW);
+  //digitalWrite(HUZZAH_OUT,LOW);
   turn_on4();
   while(analogRead(HUZZAH_IN4)> ANALOG_READ_TRESHOLD);//wait to end
   turn_off4();
@@ -169,6 +170,7 @@ void wait_for_input(){
   }else{
     return;
   }
+  digitalWrite(HUZZAH_OUT,HIGH);
   
 
 }
