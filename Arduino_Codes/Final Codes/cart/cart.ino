@@ -31,6 +31,8 @@ int state;
 #define SENDING_INFO_STATE 2
 
 #define car_length 10.0
+int current_pmp;
+int pumps_to_go [4]={3,1,4,2};
 
 void setup(){
   setup_pins();
@@ -41,8 +43,20 @@ void setup(){
   Bluetooth.begin(38400);
 }
 void loop(){
-  get_current_pos();
-  delay(500);
+    if(Bluetooth.available()){
+    Serial.write(Bluetooth.read());
+  }
+  if(Serial.available()){
+    Bluetooth.write(Serial.read());
+  }
+  return;
+  int status =  go_to_pump(pumps_to_go[current_pmp]);
+  if(status==0)current_pmp++;
+  Serial.print("Current Pump: ");
+  Serial.print(pumps_to_go[current_pmp]);
+  Serial.print(" Status: ");
+  Serial.println(status);
+  if(current_pmp==4)current_pmp=0;
   return;
   if(state == WAITING_STATE){
     //BLUETOOTH COMM to get location
@@ -81,7 +95,7 @@ void setup_pins(){
 
 }
 // Turns motors in forward direction
-void go_forward(){
+void go_backward(){
     analogWrite(ENABLE_MOTOR_A_PIN,EN_A_SPEED_CONTROL);
     analogWrite(ENABLE_MOTOR_B_PIN,EN_B_SPEED_CONTROL);
     digitalWrite(IN1_PIN, HIGH);
@@ -90,7 +104,7 @@ void go_forward(){
     digitalWrite(IN4_PIN, LOW);
 }
 // Turns motors in negative direction
-void go_backward(){
+void go_forward(){
     analogWrite(ENABLE_MOTOR_A_PIN,EN_A_SPEED_CONTROL);
     analogWrite(ENABLE_MOTOR_B_PIN,EN_B_SPEED_CONTROL);
     digitalWrite(IN1_PIN, LOW);
@@ -127,8 +141,32 @@ float get_distance(int trig_pin, int echo_pin){
     Bluetooth.write(Serial.read());
   }
 */
+
 /*
-Returns 1.0,2.0,3.0,4.0 if at corresponding pumps, else returns between [0,5] depending on distances
+Returns 0 if at that pump, 1 if after, -1 if before
+*/
+int go_to_pump(int pumpNum){
+  float current_pos = get_current_pos();
+  if ((float)pumpNum == current_pos){
+    return 0;
+  }
+  if((float)pumpNum > current_pos){
+    go_forward();
+    delay(50);
+    stop_motors();
+    delay(500);
+    return 1;
+  }
+  //Case 3
+    go_backward();
+    delay(50);
+    stop_motors();
+    delay(500);
+    return -1;
+}
+
+/*
+Returns 1.0,2.0,3.0,4.0 if at corresponding pumps, else returns between [1,4] depending on distances
 */
 float get_current_pos(){
   float fdist = get_distance(TRIG_PIN_FORWARD,ECHO_PIN_FORWARD);
@@ -137,5 +175,36 @@ float get_current_pos(){
   Serial.print(fdist);
   Serial.print(", Backward: ");
   Serial.println(bdist);
-  return 1.0; //TODO
+  if(fdist > 50 || bdist > fdist){
+    //bdist
+    if(bdist > 17.5){
+      return 4.0;
+    }
+    if(bdist > 13.5){
+      return 3.5;
+    }
+    if(bdist > 11){
+      return 3.0;
+    }
+    return 2.5;
+  }else{
+    //fdist
+    if(fdist > 15.75){
+      return 1.0;
+    }
+    if(fdist > 12.75){
+      return 1.5;
+    }
+    if(fdist > 10.0){
+      return 2.0;
+    }
+    return 2.5;
+  }
+  // FWD
+  //17.25 - 15.75 -> 1
+  // 12. 75 - 10.00 -> 2
+  // BWD
+  // 13.5 - 11 -> 3
+  // 19 - 17.5
+  //return 1.0; //TODO
 }

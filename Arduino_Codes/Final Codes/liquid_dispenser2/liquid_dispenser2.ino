@@ -67,6 +67,13 @@ void setup(){
 }
 
 void loop(){
+  if(Bluetooth.available()){
+    Serial.write(Bluetooth.read());
+  }
+  if(Serial.available()){
+    Bluetooth.write(Serial.read());
+  }
+  return;
   if (state == GET_NEXT_LIQUID_ADDRESS){
   Serial.println("Waiting For input");
     wait_for_input();
