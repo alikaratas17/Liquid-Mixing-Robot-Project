@@ -32,7 +32,7 @@ int state;
 
 #define car_length 10.0
 int current_pmp;
-int pumps_to_go [4]={3,1,4,2};
+//int pumps_to_go [4]={3,1,4,2};
 
 void setup(){
   setup_pins();
@@ -41,8 +41,10 @@ void setup(){
   Serial.println("Starting!!");
   state = WAITING_STATE;
   Bluetooth.begin(38400);
+  current_pmp = 0;
 }
 void loop(){
+  /*
     if(Bluetooth.available()){
       int c1 = Bluetooth.read();
       if(c1>=0 && c1 < 5)
@@ -54,6 +56,8 @@ void loop(){
       Bluetooth.write(c-48);
   }
   return;
+  */
+ /*
   int status =  go_to_pump(pumps_to_go[current_pmp]);
   if(status==0)current_pmp++;
   Serial.print("Current Pump: ");
@@ -62,26 +66,39 @@ void loop(){
   Serial.println(status);
   if(current_pmp==4)current_pmp=0;
   return;
+  */
   if(state == WAITING_STATE){
-    //BLUETOOTH COMM to get location
-
+  Serial.println("Waiting for next location");
+  if(Bluetooth.available()){
+      int c1 = Bluetooth.read();
+      Serial.print("Following Message Received ");
+      Serial.println(c1);
+      if(c1 > 0 && c1 < 5){
+        current_pmp = c1;
+        state = MOVING_STATE;
+      }
+  }
   }
   else if(state == MOVING_STATE){
-  float forward_dist = get_distance(TRIG_PIN_FORWARD,ECHO_PIN_FORWARD);
-  float backward_dist = get_distance(TRIG_PIN_BACKWARD,ECHO_PIN_BACKWARD);
-  float total_length = forward_dist+backward_dist + car_length;
-  float position =  backward_dist / total_length; // 0.0 1.0
-  // TODO: Move to location
-  if (position<0.5){
-    go_forward();
-  }else{
-    stop_motors();
-  }
+  Serial.print("Going to Pump ");
+  Serial.println(current_pmp);
+
+    int status =  go_to_pump(pumps_to_go[current_pmp]);
+    if(status==0){
+      state = SENDING_INFO_STATE;
+      Serial.println("Arrived");
+    }else{
+  Serial.print("Status: ");
+  Serial.println(status);
+    }
+    
   }
   else if(state==SENDING_INFO_STATE){
-    //BLUETOOTH COMM to send location
+    Bluetooth.write(1);
+    Serial.println("Sent confirmation");
+    state = WAITING_STATE;
+    
   }
-  // TODO: SHOULD THERE BE OTHER STATES
   
 }
 // Set pins to be output or input
