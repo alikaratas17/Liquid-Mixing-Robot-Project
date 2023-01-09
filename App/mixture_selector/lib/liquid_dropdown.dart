@@ -57,4 +57,9 @@ class _LiquidDropdownMenuState extends State<LiquidDropdownMenu> {
       alignment: Alignment.center,
     );
   }
+  void setList(list){
+    setState(() {
+    this.list = list;
+    });
+  }
 }

@@ -90,7 +90,12 @@ class MyDrinkWidgetState extends State<MyDrinkWidget> {
       text_to_write = getNewText();
     });
   }
-
+ void setName(name){
+   this.name = name;
+   setState((){
+     text_to_write = getNewText();
+   });
+ }
   String getNewText() {
     var part_or_ml = " ml";
     if (this.is_checked) {

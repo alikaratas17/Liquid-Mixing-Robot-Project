@@ -6,29 +6,38 @@ import 'package:http/http.dart' as http;
 import 'drink_widget.dart';
 
 class MyOrderScreen extends StatefulWidget {
+  late MyOrderScreenState my_state;
+  MyOrderScreen(drinks,max_amount) {
+    my_state = MyOrderScreenState(drinks,max_amount);
+  }
   @override
   State<StatefulWidget> createState() {
-    return MyOrderScreenState();
+    return my_state;
   }
 }
 
 class MyOrderScreenState extends State<MyOrderScreen> {
   bool _ischecked = false;
   double _max_amount = 200.0;
-  var drinks = [
+  //late List<String> drinks;
+  /* [
     "Lemon Juice",
     "Orange Juice",
     "Grenadine Juice",
     "Apple Juice"
-  ];
+  ];*/
   //var amounts = [0.0,0.0,0.0,0.0];
   late List<MyDrinkWidget> drink_widgets;
   String message = "";
 
-  MyOrderScreenState() {
-    this.drink_widgets = drinks.map((x) {
-      return MyDrinkWidget(x, _ischecked);
-    }).toList();
+  MyOrderScreenState(drinks,max_amount) {
+    _max_amount = max_amount;
+    drink_widgets = [
+      MyDrinkWidget(drinks[0], _ischecked),
+      MyDrinkWidget(drinks[1], _ischecked),
+      MyDrinkWidget(drinks[2], _ischecked),
+      MyDrinkWidget(drinks[3], _ischecked)
+    ];
   }
   @override
   Widget build(BuildContext context) {
@@ -89,26 +98,35 @@ class MyOrderScreenState extends State<MyOrderScreen> {
         'https://io.adafruit.com/api/v2/akaratas17/feeds/message/data?X-AIO-Key=' +
             my_key.key;
     var amounts = [0.0, 0.0, 0.0, 0.0];
-    if(_ischecked){
-    var percentages = [0.0, 0.0, 0.0, 0.0];
-    percentages[0] += this.drink_widgets[0].my_state.amount;
-    percentages[1] += this.drink_widgets[1].my_state.amount;
-    percentages[2] += this.drink_widgets[2].my_state.amount;
-    percentages[3] += this.drink_widgets[3].my_state.amount;
-    var total_percentage =percentages[0]+percentages[1]+percentages[2]+percentages[3];
-    if (total_percentage==0.0)return;
-    amounts[0] = (10*_max_amount * percentages[0]/total_percentage).round()*1.0/10;
-    amounts[1] = (10*_max_amount * percentages[1]/total_percentage).round()*1.0/10;
-    amounts[2] = (10*_max_amount * percentages[2]/total_percentage).round()*1.0/10;
-    amounts[3] = _max_amount -amounts[0]-amounts[1]-amounts[2];
-    }else{
-    amounts[0] += this.drink_widgets[0].my_state.amount;
-    amounts[1] += this.drink_widgets[1].my_state.amount;
-    amounts[2] += this.drink_widgets[2].my_state.amount;
-    amounts[3] += this.drink_widgets[3].my_state.amount;
-    var total_amount =amounts[0]+amounts[1]+amounts[2]+amounts[3];
-    if (total_amount==0.0 || total_amount > _max_amount)return;
-      
+    if (_ischecked) {
+      var percentages = [0.0, 0.0, 0.0, 0.0];
+      percentages[0] += this.drink_widgets[0].my_state.amount;
+      percentages[1] += this.drink_widgets[1].my_state.amount;
+      percentages[2] += this.drink_widgets[2].my_state.amount;
+      percentages[3] += this.drink_widgets[3].my_state.amount;
+      var total_percentage =
+          percentages[0] + percentages[1] + percentages[2] + percentages[3];
+      if (total_percentage == 0.0) return;
+      amounts[0] =
+          (10 * _max_amount * percentages[0] / total_percentage).round() *
+              1.0 /
+              10;
+      amounts[1] =
+          (10 * _max_amount * percentages[1] / total_percentage).round() *
+              1.0 /
+              10;
+      amounts[2] =
+          (10 * _max_amount * percentages[2] / total_percentage).round() *
+              1.0 /
+              10;
+      amounts[3] = _max_amount - amounts[0] - amounts[1] - amounts[2];
+    } else {
+      amounts[0] += this.drink_widgets[0].my_state.amount;
+      amounts[1] += this.drink_widgets[1].my_state.amount;
+      amounts[2] += this.drink_widgets[2].my_state.amount;
+      amounts[3] += this.drink_widgets[3].my_state.amount;
+      var total_amount = amounts[0] + amounts[1] + amounts[2] + amounts[3];
+      if (total_amount == 0.0 || total_amount > _max_amount) return;
     }
     String tmp_message = "Order Received\n";
     for (int i = 0; i < 4; i++) {
