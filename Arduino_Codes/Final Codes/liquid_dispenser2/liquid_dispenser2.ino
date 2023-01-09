@@ -56,6 +56,10 @@ int sent_signal;
 
 void setup(){
   setup_pins();
+  turn_off1();
+  turn_off2();
+  turn_off3();
+  turn_off4();
   digitalWrite(HUZZAH_OUT,LOW);
   Serial.begin(9600); 
   Serial.println("Starting!!");

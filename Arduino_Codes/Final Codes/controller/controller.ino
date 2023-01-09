@@ -38,6 +38,10 @@ double amounts[4];
 int current_liquid;
 void setup(){
   setup_pins();
+  turn_off1();
+  turn_off2();
+  turn_off3();
+  turn_off4();
   state = WAITING_FOR_INITIAL_MESSAGE_STATE;
   Serial.begin(115200);
   while(!Serial);
@@ -75,6 +79,8 @@ void loop(){
     dispense();
     current_liquid ++;
     state = WAITING_FOR_MOVEMENT_STATE;
+    while(current_liquid <= 4 && amounts[current_liquid-1]==0.0)
+      current_liquid++;
     if (current_liquid > 4){
       state = WAITING_FOR_INITIAL_MESSAGE_STATE;
       amounts[0]=0.0;
@@ -129,8 +135,10 @@ void handleMessage(AdafruitIO_Data *data){
   amounts[1] = inputs[1]*AMOUNT_CONST;
   amounts[2] = inputs[2]*AMOUNT_CONST;
   amounts[3] = inputs[3]*AMOUNT_CONST;
+  if(amounts[0]+amounts[1]+amounts[2]+amounts[3]==0)amounts[0]=1;
   delay(500);
   current_liquid = 1;
+  while(amounts[current_liquid-1]==0)current_liquid++;
   state = WAITING_FOR_MOVEMENT_STATE;
 }
 
