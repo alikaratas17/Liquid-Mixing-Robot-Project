@@ -68,6 +68,7 @@ void setup(){
   state = GET_NEXT_LIQUID_ADDRESS;
   current_liquid = 0;
   sent_signal = 0;
+  delay(250);
 }
 
 void loop(){
@@ -140,18 +141,20 @@ void pour_drink4(){
   state = GET_NEXT_LIQUID_ADDRESS;
 }
 void wait_to_go(){
-  if (sent_signal==0){
+  //if (sent_signal==0){
+  //  Bluetooth.write(current_liquid);
+    sent_signal = 1;
+  //}
+  while(sent_signal == 1){
     Bluetooth.write(current_liquid);
     Serial.println("SENT MESSAGE");
     Serial.println(current_liquid);
-    sent_signal = 1;
-  }
-  while(sent_signal == 1){
-  if(Bluetooth.available()){
+    delay(500);
+  while(Bluetooth.available()){
     int message = Bluetooth.read();
     Serial.println("GOT MESSAGE");
     Serial.println(message);
-   if (message == 1){
+   if (message == current_liquid){
      sent_signal = 0;
    }
   }

@@ -44,6 +44,9 @@ void setup(){
   current_pmp = 0;
 }
 void loop(){
+  //Serial.println(get_current_pos());
+  //delay(100);
+  //return;
   /*
     if(Bluetooth.available()){
       int c1 = Bluetooth.read();
@@ -77,15 +80,22 @@ void loop(){
         current_pmp = c1;
         state = MOVING_STATE;
       }
+      
   }
+  float current_pos = get_current_pos();
+  if (current_pos==1.0)Bluetooth.write(1);
+  if (current_pos==2.0)Bluetooth.write(2);
+  if (current_pos==3.0)Bluetooth.write(3);
+  if (current_pos==4.0)Bluetooth.write(4);
+  delay(500);
   }
   else if(state == MOVING_STATE){
   Serial.print("Going to Pump ");
   Serial.println(current_pmp);
 
-    int status =  go_to_pump(pumps_to_go[current_pmp]);
+    int status =  go_to_pump(current_pmp);
     if(status==0){
-      state = SENDING_INFO_STATE;
+      state = WAITING_STATE;
       Serial.println("Arrived");
     }else{
   Serial.print("Status: ");
@@ -93,12 +103,14 @@ void loop(){
     }
     
   }
+  /*
   else if(state==SENDING_INFO_STATE){
     Bluetooth.write(1);
     Serial.println("Sent confirmation");
     state = WAITING_STATE;
     
   }
+  */
   
 }
 // Set pins to be output or input
@@ -198,10 +210,10 @@ float get_current_pos(){
   Serial.println(bdist);
   if(fdist > 50 || bdist > fdist){
     //bdist
-    if(bdist > 17.5){
+    if(bdist > 18.5){
       return 4.0;
     }
-    if(bdist > 13.5){
+    if(bdist > 14.0){
       return 3.5;
     }
     if(bdist > 11){
@@ -210,13 +222,13 @@ float get_current_pos(){
     return 2.5;
   }else{
     //fdist
-    if(fdist > 15.75){
+    if(fdist > 16.75){
       return 1.0;
     }
-    if(fdist > 12.75){
+    if(fdist > 13.25){
       return 1.5;
     }
-    if(fdist > 10.0){
+    if(fdist > 11.0){
       return 2.0;
     }
     return 2.5;

@@ -15,7 +15,7 @@ class MyHomePage extends StatelessWidget {
   late List<String> list;
   late List<LiquidDropdownMenu> menus;
   late TextEditingController controller;
-  double ml_amount = 200.0;
+  int ml_amount = 200;
   var ml_button;
   MyHomePage() {
     list = ["Lemon Juice", "Orange Juice", "Grenadine Juice", "Apple Juice"];
