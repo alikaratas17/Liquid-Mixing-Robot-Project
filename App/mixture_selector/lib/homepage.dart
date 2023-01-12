@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mixture_selector/drink_widget.dart';
 
+import 'preset_order.dart';
+
 import 'order_drink.dart';
 import 'liquid_dropdown.dart';
 import 'ml_button.dart';
@@ -34,24 +36,41 @@ class MyHomePage extends StatelessWidget {
         appBar: AppBar(title: Text('Mixture Selection Homepage')),
         body: Column(
           children: [
-            Container(alignment: Alignment.bottomLeft,child:Text("Select Drink Size:"),),
-            Container(alignment: Alignment.center,child:ml_button),
+            Container(
+              alignment: Alignment.bottomLeft,
+              child: Text("Select Drink Size:"),
+            ),
+            Container(alignment: Alignment.center, child: ml_button),
             Container(
               alignment: Alignment.center,
               child: ElevatedButton(
                   onPressed: () {
                     Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => MyOrderScreen(menus.map((x) {
+                        builder: (context) => MyOrderScreen(
+                            menus.map((x) {
                               return x.my_state.dropdownValue;
-                            }).toList(),ml_button.my_state.current_value * 1.0)));
+                            }).toList(),
+                            ml_button.my_state.current_value * 1.0)));
                   },
                   child: const Text('Make Custom Mixture')),
             ),
             Container(
               alignment: Alignment.center,
+              child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => MyPresetOrderScreen(
+                            menus.map((x) {
+                              return x.my_state.dropdownValue;
+                            }).toList(),
+                            ml_button.my_state.current_value * 1.0)));
+                  },
+                  child: const Text('Make Preset Mixture')),
+            ),
+            Container(
+              alignment: Alignment.center,
               child: Column(children: menus),
             ),
-            
             Container(
                 alignment: Alignment.center,
                 child: TextField(
