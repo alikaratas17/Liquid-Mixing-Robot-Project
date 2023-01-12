@@ -141,6 +141,7 @@ void pour_drink4(){
   state = GET_NEXT_LIQUID_ADDRESS;
 }
 void wait_to_go(){
+  while(Bluetooth.available())Bluetooth.read();
   //if (sent_signal==0){
   //  Bluetooth.write(current_liquid);
     sent_signal = 1;

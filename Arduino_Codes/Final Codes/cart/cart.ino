@@ -72,7 +72,7 @@ void loop(){
   */
   if(state == WAITING_STATE){
   Serial.println("Waiting for next location");
-  if(Bluetooth.available()){
+  while(Bluetooth.available()){
       int c1 = Bluetooth.read();
       Serial.print("Following Message Received ");
       Serial.println(c1);
@@ -187,12 +187,12 @@ int go_to_pump(int pumpNum){
     go_forward();
     delay(50);
     stop_motors();
-    delay(500);
+    delay(1000);
     return 1;
   }
   //Case 3
     go_backward();
-    delay(50);
+    delay(100);
     stop_motors();
     delay(500);
     return -1;
@@ -222,13 +222,13 @@ float get_current_pos(){
     return 2.5;
   }else{
     //fdist
-    if(fdist > 16.75){
+    if(fdist > 19.1){
       return 1.0;
     }
-    if(fdist > 13.25){
+    if(fdist > 16.00){
       return 1.5;
     }
-    if(fdist > 11.0){
+    if(fdist > 13.5){
       return 2.0;
     }
     return 2.5;

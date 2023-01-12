@@ -20,8 +20,8 @@ class MyPresetOrderScreen extends StatefulWidget {
 class MyPresetOrderScreenState extends State<MyPresetOrderScreen> {
   List<ElevatedButton> options = [];
   String message = "";
-  List<String> all_options_names = ["Lemon-Orange"];
-  List<List<String>> all_options_items = [["Lemon Juice","Orange Juice"]];
+  List<String> all_options_names = ["Lemon-Orange","Grenadine-Orange","Apple-Pineapple"];
+  List<List<String>> all_options_items = [["Lemon Juice","Orange Juice"],["Grenadine Juice","Orange Juice"],["Apple Juice","Pineapple Juice"]];
 
   MyPresetOrderScreenState(drinks, max_amount) {
     for (int i = 0; i < all_options_names.length; i++) {
